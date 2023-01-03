@@ -22,6 +22,9 @@ apt-get install -qy postfix dovecot-imapd ripgrep screen mutt mc
 
 
 # configure Postfix
+sed -i 's|#submission |submission |g' /etc/postfix/master.cf
+sed -i 's|#smtps |smtps |g'           /etc/postfix/master.cf
+
 cat << EOF > /etc/postfix/main.cf
 smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
 biff = no
