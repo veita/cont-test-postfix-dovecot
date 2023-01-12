@@ -4,7 +4,10 @@ set -ex
 
 cd "${0%/*}"
 
-CONT=$(buildah from veita/debian-multiservice-bullseye)
+BASE_IMAGE="veita/debian-multiservice-bullseye"
+GIT_COMMIT=$(git describe --always --tags --dirty=-dirty)
+
+CONT=$(buildah from ${BASE_IMAGE})
 
 buildah copy $CONT etc/ /etc
 buildah copy $CONT root/ /root
@@ -25,7 +28,7 @@ buildah config --port 143/tcp $CONT
 buildah config --port 993/tcp $CONT
 
 buildah config --author "Alexander Veit" $CONT
-buildah config --label commit=$(git describe --always --tags --dirty=-dirty) $CONT
+buildah config --label commit=${GIT_COMMIT} $CONT
 
 buildah commit --rm $CONT localhost/test-postfix-dovecot:latest
 

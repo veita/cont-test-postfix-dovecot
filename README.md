@@ -6,6 +6,10 @@ Postfix will deliver all mail to the predefined `catchall` mailbox, except
 mails sent to `testuser${NN}@example.org` where `${NN}` is in the range from
 `01`, `02`, ..., `10`.
 
+Emails sent to the following recipient addresses will be rejected
+* `reject-451@rejected.domain` rejected with code 451
+* `reject-554@rejected.domain` rejected with code 554
+
 User names for IMAP access are `catchall` and `testuser${NN}@example.org` with
 password `secret` respectively.
 
@@ -20,8 +24,15 @@ To build the image run
 
 ## Run the container
 
-Run the container with Postfix listening on port 10025 for SMTP connections
-and Dovecot listening on port 10143 for IMAP connections.
+Exposed ports are
+*  25 SMTP
+* 465 SMTPS
+* 587 SUBMIT
+* 143 IMAP
+* 993 IMAPS
+
+Example: Run the container with Postfix listening on port 10025 for SMTP
+connections and Dovecot listening on port 10143 for IMAP connections.
 
 ```bash
 alias podman=docker

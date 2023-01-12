@@ -46,7 +46,7 @@ smtp_tls_CApath=/etc/ssl/certs
 smtp_tls_security_level=may
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 
-smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+smtpd_relay_restrictions = check_recipient_access hash:/etc/postfix/recipient_access, permit_mynetworks, permit_sasl_authenticated, defer_unauth_destination
 smtpd_peername_lookup = no
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
@@ -71,6 +71,12 @@ virtual_mailbox_domains = example.org, static:all
 virtual_mailbox_maps = hash:/etc/postfix/vmailbox static:catchall/
 EOF
 
+cat << EOF > /etc/postfix/recipient_access
+# rejected recipient addresses
+reject-451@rejected.domain 451 Address reject-451@rejected.domain rejected with code 451.
+reject-554@rejected.domain 554 Address reject-554@rejected.domain rejected with code 554.
+EOF
+
 
 # configure Dovecot
 cat << EOF >> /etc/dovecot/users
@@ -93,7 +99,7 @@ sed -i 's|#!include auth-passwdfile.conf.ext|!include auth-passwdfile.conf.ext|g
   /etc/dovecot/conf.d/10-auth.conf
 
 
-# add test users
+# add Dovecot test users
 source /setup/add-vmailbox.sh testuser01 example.org
 source /setup/add-vmailbox.sh testuser02 example.org
 source /setup/add-vmailbox.sh testuser03 example.org
@@ -105,9 +111,11 @@ source /setup/add-vmailbox.sh testuser08 example.org
 source /setup/add-vmailbox.sh testuser09 example.org
 source /setup/add-vmailbox.sh testuser10 example.org
 
+
 postmap /etc/postfix/vmailbox
 postmap /etc/postfix/vuid
 postmap /etc/postfix/vgid
+postmap /etc/postfix/recipient_access
 
 
 # global screen configuration
