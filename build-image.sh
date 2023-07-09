@@ -4,7 +4,7 @@ set -ex
 
 cd "${0%/*}"
 
-BASE_IMAGE="veita/debian-multiservice-bullseye"
+BASE_IMAGE="veita/debian-multiservice:bookworm"
 GIT_COMMIT=$(git describe --always --tags --dirty=-dirty)
 
 CONT=$(buildah from ${BASE_IMAGE})
